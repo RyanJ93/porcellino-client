@@ -1,0 +1,10 @@
+{
+    "loginForm.form.title": "Sign-in with your personal account",
+    "loginForm.form.password.label": "Password",
+    "loginForm.form.email.label": "E-mail",
+    "loginForm.form.button": "Login",
+    "loginForm.form.password.error": "You must provide a valid password.",
+    "loginForm.form.email.error": "You must provide your e-mail address.",
+    "loginForm.globalError.invalidCredentials": "Provided credentials are incorrect.",
+    "loginForm.globalError.generalError": "An error occurred, please try again later."
+}
