@@ -1,15 +1,15 @@
-import AuthenticatedUser from '../entities/AuthenticatedUser';
+import AuthenticationContract from '../DTOs/AuthenticationContract';
 
 class SecurityContext {
-    private authenticatedUser?: AuthenticatedUser;
+    private authenticationContract?: AuthenticationContract;
 
-    public setAuthenticatedUser(authenticatedUser?: AuthenticatedUser): this {
-        this.authenticatedUser = authenticatedUser;
+    public setAuthenticatedUser(authenticationContract?: AuthenticationContract): this {
+        this.authenticationContract = authenticationContract;
         return this;
     }
 
-    public getAuthenticatedUser(): AuthenticatedUser | undefined {
-        return this.authenticatedUser;
+    public getAuthenticationContract(): AuthenticationContract | undefined {
+        return this.authenticationContract;
     }
 
     public persist(): this {
