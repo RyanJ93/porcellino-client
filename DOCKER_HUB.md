@@ -10,6 +10,66 @@ To run your own instance of the Porcellino client execute the following command:
 docker run -p 8080:80 -d --name porcellino-client enricosola/porcellino-client:latest
 ````
 
+Note that to have a fully working application, the Porcellino client is required, more information about the Porcellino client's Docker image [here](https://hub.docker.com/r/enricosola/porcellino-client).
+
+### Running via docker compose
+
+Here you can find an example to run this application alongside a MySQL database instance using docker compose:
+
+````yaml
+version: '3.8'
+services:
+    server:
+        image: 'enricosola/porcellino-server:latest'
+        container_name: 'porcellino-server'
+        hostname: 'porcellino-server'
+        restart: 'always'
+        environment:
+            - SPRING_DATASOURCE_URL=jdbc:mysql://porcellino-mysql:3306/porcellino?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+            - SPRING_DATASOURCE_USERNAME=porcellino
+            - SPRING_DATASOURCE_PASSWORD=porcellino
+            - JWT_SECRET=secret_key
+        ports:
+            - '8081:8080'
+        networks:
+            - porcellino-network
+
+    client:
+        image: 'enricosola/porcellino-client:latest'
+        container_name: 'porcellino-client'
+        hostname: 'porcellino-client'
+        restart: 'always'
+        ports:
+            - '8080:8080'
+        networks:
+            - porcellino-network
+
+    mysql:
+        image: 'mysql:8.0'
+        container_name: 'porcellino-mysql'
+        hostname: 'porcellino-mysql'
+        restart: always
+        ports:
+            - '3306:3306'
+        volumes:
+            - ./data/db:/var/lib/mysql
+            - ./logs/mysql:/var/log/mysql
+        environment:
+            MYSQL_DATABASE: porcellino
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_USER: porcellino
+            MYSQL_PASSWORD: porcellino
+            MYSQL_ROOT_HOST: 0.0.0.0
+        security_opt:
+            - seccomp:unconfined
+        networks:
+            - porcellino-network
+
+networks:
+    porcellino-network:
+        driver: bridge
+````
+
 ## License
 
 This work is licensed under a
