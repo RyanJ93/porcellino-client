@@ -1,46 +1,28 @@
-# Getting Started with Create React App
+# Porcellino
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Manage your personal finance with Porcellino: this simple web-app available online allows to easily track your incomes and expenses, you can also organize your finance distributing transactions across multiple portfolio supporting different currencies.
 
-## Available Scripts
+### Requirements
 
-In the project directory, you can run:
+Before start installing the Porcellino client on your local environment please make sure you have all the required dependencies:
 
-### `npm start`
+- Node.js version 18 or greater.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Installation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Once you cloned this repository you should install all the required modules running `npm install` in the project root directory, note that this command will automatically compile the font-end, which is written using React.js, TypeScript and SASS, using WebPack; of course you can compile it every time you need using those commands: `npm run webpack-dev` (for development builds) and `npm run webpack-prod` (for production builds). <br />
 
-### `npm test`
+If you are looking for instructions to install the software as a Docker container refer to the [official page on Docker Hub](https://hub.docker.com/r/enricosola/porcellino-client).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## License
 
-### `npm run build`
+This work is licensed under a
+[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
+[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
+[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Developed with ❤️ by [Enrico Sola](https://www.enricosola.dev).
