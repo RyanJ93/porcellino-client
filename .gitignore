@@ -27,4 +27,5 @@ public/*.woff2
 public/*.woff
 public/main.js*
 
-test/*.js
+/test/**/*.js
+/test/*.js
