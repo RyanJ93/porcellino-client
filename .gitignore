@@ -26,3 +26,5 @@ yarn-error.log*
 public/*.woff2
 public/*.woff
 public/main.js*
+
+test/*.js

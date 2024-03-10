@@ -17,6 +17,8 @@ providerManager.register(new ApplicationProvider());
 // @ts-ignore
 document.addEventListener('DOMContentLoaded', () => {
     providerManager.runProviders().then(() => {
+        // @ts-ignore
+        window.hasAppBeenInitialized = true;
         console.log('App initialized!');
     });
 });
