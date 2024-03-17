@@ -8,11 +8,12 @@ import Box from '@mui/material/Box';
 const MainView = (props: any) => {
     const [sectionName, setSectionName] = useState<string>('portfolio');
     const handleMenuItemSelection = (target: string) => setSectionName(target);
+    const handleLogout = (): void => props.onLogout();
 
     return (
         <Box className={'w-100 h-100'}>
             <HeaderBar />
-            <LateralMenu onMenuItemSelection={handleMenuItemSelection} />
+            <LateralMenu onMenuItemSelection={handleMenuItemSelection} onLogout={handleLogout} />
             <Box className={styles.mainContainer + ' w-100 h-100'}>
                 { sectionName === 'portfolio' && <PortfolioSection /> }
             </Box>

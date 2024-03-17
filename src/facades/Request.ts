@@ -5,21 +5,21 @@ import Exception from '../exceptions/Exception';
 import Facade from './Facade';
 
 class Request implements Facade {
-    private static processResponse(request: XMLHttpRequest){
-        const exceptionMapper = ExceptionMapper.getInstance();
-        let exception = null;
+    private static processResponse(request: XMLHttpRequest): Error | null{
+        const exceptionMapper: ExceptionMapper = ExceptionMapper.getInstance();
+        let exception: Error | null = null;
         if ( typeof request.response?.status !== 'string' && request.status > 200 ){
-            const exceptionMessage = 'Remote service responded with an error: ' + request.status;
-            const exceptionClass = exceptionMapper.getExceptionByHTTPCode(request.status);
+            const exceptionClass: typeof Exception = exceptionMapper.getExceptionByHTTPCode(request.status);
+            const exceptionMessage: string = 'Remote service responded with an error: ' + request.status;
             if ( exceptionClass !== null ){
                 exception = new exceptionClass(exceptionMessage);
             }
         }else if ( request.response?.status !== 'SUCCESS' ){
-            let exceptionClass = exceptionMapper.getExceptionByStatus(request.response?.status);
+            let exceptionClass: typeof Exception = exceptionMapper.getExceptionByStatus(request.response?.status);
             if ( exceptionClass === null ){
                 exceptionClass = RemoteServiceException;
             }
-            const exceptionMessage = 'Remote service returned error: ' + request.response?.status;
+            const exceptionMessage: string = 'Remote service returned error: ' + request.response?.status;
             exception = new exceptionClass(exceptionMessage);
             if ( exception instanceof Exception ){
                 exception.extractHTTPResponseProperties(request.response);
@@ -28,10 +28,11 @@ class Request implements Facade {
         return exception;
     }
 
-    private static addAuthenticationHeader(request: XMLHttpRequest): void {
-        const accessToken = SecurityContextHolder.getContext().getAuthenticationContract()?.getToken();
-        //const accessToken = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuaXQiLCJleHAiOjE3MTA1Njc4NzQsImlhdCI6MTcxMDU2NTI4Mn0.deNU1Kz_MJTVVZy7-Ub19xqT0T9x7oz--zY8cGAxFCmbzokHXWsNCxqbGK3G9AtW6O723ekI9_HREU5VJa_tWg';
-        if ( typeof accessToken === 'string' ){
+    private static addAuthenticationHeader(request: XMLHttpRequest, accessToken?: string): void {
+        if ( typeof accessToken !== 'string' || accessToken === '' ){
+            accessToken = SecurityContextHolder.getContext().getAuthenticationContract()?.getToken() ?? '';
+        }
+        if ( accessToken !== '' ){
             request.setRequestHeader('Authorization', 'Bearer ' + accessToken);
         }
     }
@@ -77,13 +78,13 @@ class Request implements Facade {
         return url;
     }
 
-    private static makeRequest(method: string, url: string, query: any, data: any, authenticated: boolean): Promise<any> {
+    private static makeRequest(method: string, url: string, query: any, data: any, options: RequestOptions = {}): Promise<any> {
         return new Promise((resolve, reject) => {
-            const request = new XMLHttpRequest();
+            const request: XMLHttpRequest = new XMLHttpRequest();
             request.open(method, Request.buildRequestURL(url, query), true);
-            let formData = null;
-            if ( authenticated ){
-                Request.addAuthenticationHeader(request);
+            let formData: FormData | null = null;
+            if ( options?.authenticated !== false ){
+                Request.addAuthenticationHeader(request, options?.accessToken);
             }
             if ( data !== null && typeof data === 'object' ){
                 formData = Request.preparePOSTFields(data);
@@ -91,7 +92,7 @@ class Request implements Facade {
             request.responseType = 'json';
             request.onreadystatechange = () => {
                 if ( request.readyState === XMLHttpRequest.DONE ){
-                    const exception = Request.processResponse(request);
+                    const exception: Error | null = Request.processResponse(request);
                     if ( exception !== null ){
                         return reject(exception);
                     }
@@ -102,20 +103,20 @@ class Request implements Facade {
         });
     }
 
-    public static async get(url: string, query: any = null, authenticated: boolean = true): Promise<any> {
-        return await Request.makeRequest('GET', url, query, null, authenticated);
+    public static async get(url: string, query: any = null, options: RequestOptions = {}): Promise<any> {
+        return await Request.makeRequest('GET', url, query, null, options);
     }
 
-    public static async post(url: string, data: any = null, authenticated: boolean = true): Promise<any> {
-        return await Request.makeRequest('POST', url, null, data, authenticated);
+    public static async post(url: string, data: any = null, options: RequestOptions = {}): Promise<any> {
+        return await Request.makeRequest('POST', url, null, data, options);
     }
 
-    public static async patch(url: string, data: any = null, authenticated: boolean = true): Promise<any> {
-        return await Request.makeRequest('PATCH', url, null, data, authenticated);
+    public static async patch(url: string, data: any = null, options: RequestOptions = {}): Promise<any> {
+        return await Request.makeRequest('PATCH', url, null, data, options);
     }
 
-    public static async delete(url: string, query: any = null, authenticated: boolean = true): Promise<any> {
-        return await Request.makeRequest('DELETE', url, query, null, authenticated);
+    public static async delete(url: string, query: any = null, options: RequestOptions = {}): Promise<any> {
+        return await Request.makeRequest('DELETE', url, query, null, options);
     }
 }
 

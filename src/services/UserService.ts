@@ -12,7 +12,7 @@ type UserSignupRequestPayload = {
 class UserService extends Service {
     public async signup(email: string, password: string): Promise<void> {
         const data: UserSignupRequestPayload = { password: password, email: email };
-        const response = await Request.post(APIEndpoints.USER_SIGNUP, data, false);
+        const response = await Request.post(APIEndpoints.USER_SIGNUP, data, { authenticated: false });
         new AuthenticationService().setAuthenticatedUser(new User(response.user), response.token, true);
     }
 }

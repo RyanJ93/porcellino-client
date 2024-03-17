@@ -11,11 +11,6 @@ class SecurityContext {
     public getAuthenticationContract(): AuthenticationContract | undefined {
         return this.authenticationContract;
     }
-
-    public persist(): this {
-
-        return this;
-    }
 }
 
 export default SecurityContext;
