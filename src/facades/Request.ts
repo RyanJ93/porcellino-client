@@ -1,4 +1,5 @@
 import RemoteServiceException from '../exceptions/RemoteServiceException';
+import SecurityContextHolder from '../suppport/SecurityContextHolder';
 import ExceptionMapper from '../suppport/ExceptionMapper';
 import Exception from '../exceptions/Exception';
 import Facade from './Facade';
@@ -28,11 +29,11 @@ class Request implements Facade {
     }
 
     private static addAuthenticationHeader(request: XMLHttpRequest): void {
-        //let accessToken = App.getAccessToken();
-        //if ( accessToken !== null ){
-        //    accessToken = 'Bearer ' + accessToken;
-        //    request.setRequestHeader('Authorization', accessToken);
-        //}
+        const accessToken = SecurityContextHolder.getContext().getAuthenticationContract()?.getToken();
+        //const accessToken = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZXN0QHRlc3QuaXQiLCJleHAiOjE3MTA1Njc4NzQsImlhdCI6MTcxMDU2NTI4Mn0.deNU1Kz_MJTVVZy7-Ub19xqT0T9x7oz--zY8cGAxFCmbzokHXWsNCxqbGK3G9AtW6O723ekI9_HREU5VJa_tWg';
+        if ( typeof accessToken === 'string' ){
+            request.setRequestHeader('Authorization', 'Bearer ' + accessToken);
+        }
     }
 
     private static appendValue(formData: FormData, fieldName: string, value: any){
@@ -107,6 +108,14 @@ class Request implements Facade {
 
     public static async post(url: string, data: any = null, authenticated: boolean = true): Promise<any> {
         return await Request.makeRequest('POST', url, null, data, authenticated);
+    }
+
+    public static async patch(url: string, data: any = null, authenticated: boolean = true): Promise<any> {
+        return await Request.makeRequest('PATCH', url, null, data, authenticated);
+    }
+
+    public static async delete(url: string, query: any = null, authenticated: boolean = true): Promise<any> {
+        return await Request.makeRequest('DELETE', url, query, null, authenticated);
     }
 }
 

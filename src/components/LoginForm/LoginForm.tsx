@@ -12,12 +12,6 @@ import styles from './LoginForm.module.scss';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
-type LoginFormErrors = {
-    globalError?: string,
-    password?: string,
-    email?: string
-};
-
 const LoginForm = (props: any) => {
     const [showLoader, setShowLoader] = useState<boolean>(false);
     const [errors, setErrors] = useState<LoginFormErrors>({});
@@ -26,19 +20,9 @@ const LoginForm = (props: any) => {
     const emailInputRef = useRef<HTMLInputElement>(null);
     const rememberMeRef = useRef<HTMLInputElement>(null);
 
-    const processErrorMessageBag = (errorMessageBag?: ErrorMessageBag): void => {
-        if ( errorMessageBag instanceof ErrorMessageBag ){
-            const errorMessages = errorMessageBag.getAll(), errors: any = {};
-            for ( const fieldName in errorMessages ){
-                errors[fieldName] = errorMessages[fieldName].join('\n');
-            }
-            setErrors(errors);
-        }
-    };
-
     const isFormValid = (): boolean => {
-        const password = passwordInputRef.current?.value ?? '';
-        const email = passwordInputRef.current?.value ?? '';
+        const password: string = passwordInputRef.current?.value ?? '';
+        const email: string = passwordInputRef.current?.value ?? '';
         const errors: LoginFormErrors = {};
         let isFormValid: boolean = true;
         if ( password === '' || password.length < 6 ){
@@ -53,23 +37,29 @@ const LoginForm = (props: any) => {
         return isFormValid;
     };
 
+    const handleSubmitError = (ex: Error): void => {
+        if ( ex instanceof UnauthorizedException || ex instanceof NotFoundException ){
+            setErrors({ globalError: props.t('loginForm.globalError.invalidCredentials') });
+        }else if ( ex instanceof InvalidInputException && ex.hasErrorMessageBag() ){
+            const errorMessageBag: ErrorMessageBag = ex.getErrorMessageBag()!;
+            setErrors(errorMessageBag.getPackedCollection() as LoginFormErrors);
+        }else{
+            setErrors({ globalError: props.t('loginForm.globalError.generalError') });
+        }
+    };
+
     const handleSubmit = (event: React.FormEvent): void => {
         event.preventDefault();
         event.stopPropagation();
         if ( isFormValid() ){
-            const rememberMe = rememberMeRef.current?.checked ?? false;
-            const password = passwordInputRef.current?.value ?? '';
-            const email = emailInputRef.current?.value ?? '';
+            const rememberMe: boolean = rememberMeRef.current?.checked ?? false;
+            const password: string = passwordInputRef.current?.value ?? '';
+            const email: string = emailInputRef.current?.value ?? '';
             setShowLoader(true);
-            new AuthenticationService().authenticate(email, password, rememberMe).then(() => props?.onAuthenticated()).catch((ex) => {
-                if ( ex instanceof UnauthorizedException || ex instanceof NotFoundException ){
-                    setErrors({ globalError: props.t('loginForm.globalError.invalidCredentials') });
-                }else if ( ex instanceof InvalidInputException ){
-                    processErrorMessageBag(ex.getErrorMessageBag());
-                }else{
-                    setErrors({ globalError: props.t('loginForm.globalError.generalError') });
-                }
-            }).finally(() => setShowLoader(false));
+            new AuthenticationService().authenticate(email, password, rememberMe)
+                .then(() => props?.onAuthenticated())
+                .catch((ex: Error) => handleSubmitError(ex))
+                .finally(() => setShowLoader(false));
         }
     };
 

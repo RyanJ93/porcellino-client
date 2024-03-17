@@ -11,13 +11,6 @@ import styles from './SignupForm.module.scss';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
-type SignupFormErrors = {
-    passwordConfirm?: string,
-    globalError?: string,
-    password?: string,
-    email?: string
-};
-
 const SignupForm = (props: any) => {
     const [showLoader, setShowLoader] = useState<boolean>(false);
     const [errors, setErrors] = useState<SignupFormErrors>({});
@@ -26,20 +19,10 @@ const SignupForm = (props: any) => {
     const passwordInputRef = useRef<HTMLInputElement>(null);
     const emailInputRef = useRef<HTMLInputElement>(null);
 
-    const processErrorMessageBag = (errorMessageBag?: ErrorMessageBag): void => {
-        if ( errorMessageBag instanceof ErrorMessageBag ){
-            const errorMessages = errorMessageBag.getAll(), errors: any = {};
-            for ( const fieldName in errorMessages ){
-                errors[fieldName] = errorMessages[fieldName].join('\n');
-            }
-            setErrors(errors);
-        }
-    };
-
     const isFormValid = (): boolean => {
-        const passwordConfirm = passwordConfirmInputRef.current?.value ?? '';
-        const password = passwordInputRef.current?.value ?? '';
-        const email = passwordInputRef.current?.value ?? '';
+        const passwordConfirm: string = passwordConfirmInputRef.current?.value ?? '';
+        const password: string = passwordInputRef.current?.value ?? '';
+        const email: string = passwordInputRef.current?.value ?? '';
         const errors: SignupFormErrors = {};
         let isFormValid: boolean = true;
         if ( password !== passwordConfirm || password === '' || passwordConfirm === '' ){
@@ -58,22 +41,28 @@ const SignupForm = (props: any) => {
         return isFormValid;
     };
 
+    const handleSubmitError = (ex: Error): void => {
+        if ( ex instanceof EMailAddressTakenException ){
+            setErrors({ globalError: props.t('signupForm.globalError.emailAddressTaken') });
+        }else if ( ex instanceof InvalidInputException && ex.hasErrorMessageBag() ){
+            const errorMessageBag: ErrorMessageBag = ex.getErrorMessageBag()!;
+            setErrors(errorMessageBag.getPackedCollection() as SignupFormErrors);
+        }else{
+            setErrors({ globalError: props.t('signupForm.globalError.generalError') });
+        }
+    };
+
     const handleSubmit = (event: React.FormEvent): void => {
         event.preventDefault();
         event.stopPropagation();
         if ( isFormValid() ){
-            const password = passwordInputRef.current?.value ?? '';
-            const email = emailInputRef.current?.value ?? '';
+            const password: string = passwordInputRef.current?.value ?? '';
+            const email: string = emailInputRef.current?.value ?? '';
             setShowLoader(true);
-            new UserService().signup(email, password).then(() => props?.onAuthenticated()).catch((ex) => {
-                if ( ex instanceof EMailAddressTakenException ){
-                    setErrors({ globalError: props.t('signupForm.globalError.emailAddressTaken') });
-                }else if ( ex instanceof InvalidInputException ){
-                    processErrorMessageBag(ex.getErrorMessageBag());
-                }else{
-                    setErrors({ globalError: props.t('signupForm.globalError.generalError') });
-                }
-            }).finally(() => setShowLoader(false));
+            new UserService().signup(email, password)
+                .then(() => props?.onAuthenticated())
+                .catch((ex) => handleSubmitError(ex))
+                .finally(() => setShowLoader(false));
         }
     };
 
