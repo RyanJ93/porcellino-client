@@ -8,13 +8,16 @@ class InvalidInputException extends Exception {
         this.setErrorMessageBag(ErrorMessageBag.makeFromHTTPResponse(response));
     }
 
-    public setErrorMessageBag(errorMessageBag: ErrorMessageBag): this {
+    public setErrorMessageBag(errorMessageBag: ErrorMessageBag): void {
         this.errorMessageBag = errorMessageBag;
-        return this;
     }
 
     getErrorMessageBag(): ErrorMessageBag | undefined {
         return this.errorMessageBag;
+    }
+
+    hasErrorMessageBag(): boolean {
+        return this.errorMessageBag instanceof ErrorMessageBag;
     }
 }
 

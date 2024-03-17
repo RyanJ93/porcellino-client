@@ -1,7 +1,8 @@
+interface MessageBagPackedErrorCollection { [key: string]: string }
 interface MessageBagErrorCollection { [key: string]: string[] }
 
 class ErrorMessageBag {
-    public static makeFromHTTPResponse(response: any){
+    public static makeFromHTTPResponse(response: any): ErrorMessageBag {
         let errorMessageBag: any = null;
         if ( response?.errors !== null && typeof response?.errors === 'object' ){
             errorMessageBag = new ErrorMessageBag();
@@ -68,6 +69,14 @@ class ErrorMessageBag {
      */
     public getAll(): MessageBagErrorCollection {
         return this.errors;
+    }
+
+    public getPackedCollection(): MessageBagPackedErrorCollection {
+        const messageBagPackedErrorCollection: MessageBagPackedErrorCollection = {};
+        for ( const fieldName in this.errors ){
+            messageBagPackedErrorCollection[fieldName] = this.errors[fieldName].join('\n');
+        }
+        return messageBagPackedErrorCollection;
     }
 
     /**
