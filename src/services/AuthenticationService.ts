@@ -29,10 +29,11 @@ class AuthenticationService extends Service {
 
     private setupRenewCron(token: string): void {
         const jwtPayload: any = JSON.parse(window.atob(token.split('.')[1]));
-        let timeout: number = jwtPayload.exp - new Date().getTime() - 600;
+        let timeout: number = ( jwtPayload.exp * 1000 ) - new Date().getTime() - 600000;
         if ( timeout <= 0 ){
             timeout = 1;
         }
+        console.debug('Next token renewal in ' + ( timeout / 1000 ) + ' seconds.');
         window.setTimeout(() => this.renew(), timeout);
     }
 
