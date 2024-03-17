@@ -31,6 +31,11 @@ declare global {
         password?: string,
         email?: string
     };
+
+    type RequestOptions = {
+        authenticated?: boolean,
+        accessToken?: string
+    };
 }
 
 export {};

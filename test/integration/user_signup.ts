@@ -19,23 +19,27 @@ async function compileSignupForm(email: string, password: string, passwordConfir
     await submitButtonElement.click();
 }
 
-describe('Testing user signup.', async () => {
-    before(() => Selenium.ensureSetup());
+async function switchToSignupForm(): Promise<void> {
+    const webDriver: WebDriver = Selenium.getWebDriver()!;
+    const element: WebElement = await webDriver.findElement(By.linkText('Create your account!'));
+    await element.click();
+    await webDriver.findElement(By.css('form[data-action="user.signup"]'));
+}
 
-    it('Should load the authentication page.', async () => {
+describe('Testing user signup.', async (): Promise<void> => {
+    before((): Promise<void> => Selenium.ensureSetup());
+
+    it('Should load the authentication page.', async (): Promise<void> => {
         const webDriver: WebDriver = Selenium.getWebDriver()!;
         await webDriver.get('https://porcellino.local');
         await webDriver.findElement(By.css('form[data-action="user.login"]'));
     });
 
-    it('Should switch to the signup form.', async () => {
-        const webDriver: WebDriver = Selenium.getWebDriver()!;
-        const element: WebElement = await webDriver.findElement(By.linkText('Create your account!'));
-        await element.click();
-        await webDriver.findElement(By.css('form[data-action="user.signup"]'));
+    it('Should switch to the signup form.', async (): Promise<void> => {
+        await switchToSignupForm();
     });
 
-    it('Should detect an invalid email address.', async () => {
+    it('Should detect an invalid email address.', async (): Promise<void> => {
         await compileSignupForm('test-frontend@', 'password');
         const webDriver: WebDriver = Selenium.getWebDriver()!;
         const errorLabelElement: WebElement = await webDriver.findElement(By.id('email-error-text'));
@@ -43,7 +47,7 @@ describe('Testing user signup.', async () => {
         deepStrictEqual(errorLabelText, 'You must provide your e-mail address.');
     });
 
-    it('Should detect an invalid password.', async () => {
+    it('Should detect an invalid password.', async (): Promise<void> => {
         await compileSignupForm('test-frontend@test.it', 'ps');
         const webDriver: WebDriver = Selenium.getWebDriver()!;
         const errorLabelElement: WebElement = await webDriver.findElement(By.id('password-error-text'));
@@ -51,7 +55,7 @@ describe('Testing user signup.', async () => {
         deepStrictEqual(errorLabelText, 'You must provide a valid password.');
     });
 
-    it('Should detect an invalid password confirm.', async () => {
+    it('Should detect an invalid password confirm.', async (): Promise<void> => {
         await compileSignupForm('test-frontend@test.it', 'password', 'password2');
         const webDriver: WebDriver = Selenium.getWebDriver()!;
         const errorLabelElement: WebElement = await webDriver.findElement(By.id('password-confirm-error-text'));
@@ -59,7 +63,7 @@ describe('Testing user signup.', async () => {
         deepStrictEqual(errorLabelText, 'You must confirm your password.');
     });
 
-    it('Should create a new user.', async () => {
+    it('Should create a new user.', async (): Promise<void> => {
         await compileSignupForm('test-frontend@test.it', 'password');
         const webDriver: WebDriver = Selenium.getWebDriver()!;
         const elementList: WebElement[] = await webDriver.findElements(By.css('.error-msg'));
@@ -67,7 +71,14 @@ describe('Testing user signup.', async () => {
         deepStrictEqual(errorMessageList, []);
     });
 
+    it('Should log the user out.', async (): Promise<void> => {
+        await Selenium.waitForSelector('.hook__lateral-menu-list');
+        await Selenium.clickElementBySelector('.hook__lateral-menu-list li[data-target="logout"]');
+        await Selenium.waitForSelector('form[data-action="user.login"]');
+    });
+
     it('Should detect an already existing user.', async () => {
+        await switchToSignupForm();
         await compileSignupForm('test-frontend@test.it', 'password');
         const webDriver: WebDriver = Selenium.getWebDriver()!;
         const errorLabelElement: WebElement = await webDriver.findElement(By.id('global-error-text'));

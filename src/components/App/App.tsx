@@ -1,3 +1,4 @@
+import AuthenticationService from '../../services/AuthenticationService';
 import React, { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 import AuthView from '../AuthView/AuthView';
@@ -7,13 +8,22 @@ import styles from './App.module.scss';
 import Box from '@mui/material/Box';
 
 const App = (props: any) => {
-    // @ts-ignore
-    useEffect(() => { window.hasAppMounted = true; }, []);
-    const [viewName, setViewName] = useState<string>('auth');
+    const [viewName, setViewName] = useState<string>('');
 
-    const handleAuthentication = (isNewUser: boolean) => {
-        console.log('AUTH', isNewUser);
-        setViewName('main');
+    useEffect(() => {
+        new AuthenticationService().checkAuthenticationStatus().then((status) => {
+            const view: string = status ? 'main' : 'auth';
+            setViewName(view);
+        });
+        // @ts-ignore
+        window.hasAppMounted = true;
+    }, []);
+
+
+    const handleAuthentication = (isNewUser: boolean): void => setViewName('main');
+    const handleLogout = (): void => {
+        new AuthenticationService().logout();
+        setViewName('auth');
     };
 
     return (
@@ -21,7 +31,7 @@ const App = (props: any) => {
             <CssBaseline />
             <Box className={'h-100 w-100 d-flex'}>
                 { viewName === 'auth' && <AuthView onAuthenticated={handleAuthentication} /> }
-                { viewName === 'main' && <MainView /> }
+                { viewName === 'main' && <MainView onLogout={handleLogout} /> }
             </Box>
         </main>
     );
