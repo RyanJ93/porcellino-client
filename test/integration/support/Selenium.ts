@@ -1,4 +1,4 @@
-import { Browser, Builder, By, WebDriver, WebElement, until } from 'selenium-webdriver';
+import { Browser, Builder, By, WebDriver, WebElement, until, Key } from 'selenium-webdriver';
 import { Select } from 'selenium-webdriver/lib/select';
 
 class Selenium {
@@ -55,6 +55,16 @@ class Selenium {
         await element.click();
         const optionElement: WebElement = await Selenium.waitAndFind(optionSelector);
         await optionElement.click();
+    }
+
+    public static async getSelectOptionList(selector: string): Promise<string[]> {
+        const element: WebElement = await (Selenium.webDriver!).findElement(By.css(selector));
+        const optionSelector: string = 'ul li[role="option"]';
+        await element.click();
+        await Selenium.waitForSelector(optionSelector);
+        const elementList: WebElement[] = await (Selenium.webDriver!).findElements(By.css(optionSelector));
+        await (Selenium.webDriver!).actions().sendKeys(Key.ESCAPE).perform();
+        return Promise.all(elementList.map((element) => element.getText()));
     }
 
     public static async getErrorMessagesInContainer(selector: string): Promise<string[]> {

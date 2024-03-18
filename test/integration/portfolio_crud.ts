@@ -64,6 +64,8 @@ describe('Testing portfolio management.', async (): Promise<void> => {
         const titleElement: WebElement = await firstEntry.findElement(By.css('h5.hook__portfolio-card-title'));
         const titleContent: string = await titleElement.getText();
         deepStrictEqual(titleContent, portfolioName);
+        const optionList: string[] = await Selenium.getSelectOptionList('.hook__portfolio-select');
+        deepStrictEqual(optionList, ['Select a portfolio', portfolioName]);
     });
 
     it('Should detect a non-empty list of portfolio.', async (): Promise<void> => {
@@ -104,6 +106,8 @@ describe('Testing portfolio management.', async (): Promise<void> => {
         const titleElement: WebElement = await firstEntry.findElement(By.css('h5.hook__portfolio-card-title'));
         const titleContent: string = await titleElement.getText();
         deepStrictEqual(titleContent, portfolioName);
+        const optionList: string[] = await Selenium.getSelectOptionList('.hook__portfolio-select');
+        deepStrictEqual(optionList, ['Select a portfolio', portfolioName]);
     });
 
     it('Should open the portfolio delete confirm dialog.', async (): Promise<void> => {
@@ -125,5 +129,7 @@ describe('Testing portfolio management.', async (): Promise<void> => {
         await setTimeout(3000);
         const elementList: WebElement[] = await webDriver.findElements(By.css('div.hook__portfolio-list .hook__portfolio-card'));
         deepStrictEqual(elementList, []);
+        const optionList: string[] = await Selenium.getSelectOptionList('.hook__portfolio-select');
+        deepStrictEqual(optionList, ['Select a portfolio']);
     });
 });

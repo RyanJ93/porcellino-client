@@ -50,5 +50,6 @@
     "portfolioSection.deleteConfirm.subtext": "This operation cannot be undone.",
     "portfolioSection.refresh.title": "Refresh portfolio list",
     "deleteConfirmDialog.cancel.label": "Cancel",
-    "deleteConfirmDialog.delete.label": "Delete"
+    "deleteConfirmDialog.delete.label": "Delete",
+    "portfolioSelect.select.placeholder": "Select a portfolio"
 }
