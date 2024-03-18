@@ -4,11 +4,14 @@ import APIEndpoints from '../enum/APIEndpoints';
 import Portfolio from '../entities/Portfolio';
 import Request from '../facades/Request';
 import Storage from '../facades/Storage';
+import Service from './Service';
 
-class PortfolioService {
+class PortfolioService extends Service {
     private portfolio?: Portfolio;
 
     public constructor(portfolio: Portfolio | undefined = undefined){
+        super();
+
         this.setPortfolio(portfolio);
     }
 
@@ -18,6 +21,10 @@ class PortfolioService {
 
     public getPortfolio(): Portfolio | undefined {
         return this.portfolio;
+    }
+
+    public getById(id: number): Portfolio | undefined {
+        return this.portfolio = Storage.getCollection('portfolios').get(id.toString());
     }
 
     public async getList(): Promise<Portfolio[]> {
@@ -38,6 +45,7 @@ class PortfolioService {
         const response = await Request.post(APIEndpoints.PORTFOLIO_CREATE, { currencyId: currencyId, name: name });
         const portfolio: Portfolio = new PortfolioMapper().makeFromAPIResponse(response);
         Storage.getCollection('portfolios').store(portfolio.getId().toString(), portfolio);
+        this.eventBroker.emit('portfolioCreate', portfolio);
         return this.portfolio = portfolio;
     }
 
@@ -50,6 +58,7 @@ class PortfolioService {
         const response = await Request.patch(url, { name: name });
         const portfolio: Portfolio = new PortfolioMapper().makeFromAPIResponse(response);
         Storage.getCollection('portfolios').store(portfolioId, portfolio);
+        this.eventBroker.emit('portfolioUpdate', portfolio);
         return this.portfolio = portfolio;
     }
 
@@ -58,6 +67,8 @@ class PortfolioService {
             throw new RuntimeException('No portfolio defined.');
         }
         await Request.delete(APIEndpoints.PORTFOLIO_DELETE.replace('{portfolioId}', this.portfolio.getId().toString()));
+        Storage.getCollection('portfolios').delete(this.portfolio.getId().toString());
+        this.eventBroker.emit('portfolioDelete', this.portfolio.getId());
         this.portfolio = undefined;
     }
 }

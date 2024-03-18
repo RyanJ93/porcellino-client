@@ -7,7 +7,7 @@ class StorageNode {
 
     public storeList(keyPropertyName: string, list: any[]): void {
         list.forEach((entry: any) => {
-            const key: string = entry[keyPropertyName] ?? '';
+            const key: string = entry[keyPropertyName]?.toString() ?? '';
             if ( key !== '' ){
                 this.entries.set(key, entry);
             }

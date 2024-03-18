@@ -11,10 +11,10 @@ class InjectionManager {
     private static instance?: InjectionManager;
 
     static getInstance(): InjectionManager {
-        if ( typeof InjectionManager === 'undefined' ){
+        if ( typeof InjectionManager.instance === 'undefined' ){
             InjectionManager.instance = new InjectionManager();
         }
-        return InjectionManager.instance!;
+        return InjectionManager.instance;
     }
 
     public register(name: string, injector: Injector): void {
