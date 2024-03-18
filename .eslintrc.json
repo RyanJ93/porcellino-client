@@ -17,14 +17,18 @@
             "jsx": true
         }
     },
-    "plugins": ["react", "@typescript-eslint"],
+    "plugins": ["react", "react-hooks", "@typescript-eslint"],
     "parser": "@typescript-eslint/parser",
     "rules": {
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
         "indent": ["error", 4, { "SwitchCase": 1 }],
         "quotes": ["error", "single"],
         "semi": ["error", "always"],
         "@typescript-eslint/no-explicit-any": 0,
         "@typescript-eslint/ban-ts-comment": 0,
-        "react/prop-types": 0
+        "react/prop-types": 0,
+        "no-unused-vars": 0,
+        "no-undef": 0
     }
 }

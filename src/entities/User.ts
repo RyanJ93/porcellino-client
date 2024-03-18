@@ -1,9 +1,11 @@
+import Entity from './Entity';
+
 type UserProperties = {
     email: string,
     id: number
 };
 
-class User {
+class User implements Entity {
     private email: string;
     private id: number;
 

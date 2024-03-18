@@ -1,5 +1,6 @@
-import { CssBaseline } from '@mui/material';
 import { createRoot } from 'react-dom/client';
+import { SnackbarProvider } from 'notistack';
+import { CssBaseline } from '@mui/material';
 import App from '../components/App/App';
 import Provider from './Provider';
 import React from 'react';
@@ -10,8 +11,10 @@ class ApplicationProvider implements Provider {
         const root = createRoot(element);
         root.render((
             <React.StrictMode>
-                <CssBaseline />
-                <App />
+                <SnackbarProvider>
+                    <CssBaseline />
+                    <App />
+                </SnackbarProvider>
             </React.StrictMode>
         ));
     }
